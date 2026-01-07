@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "perfact-dbutils"
+authors = [
+    {name="Viktor Dick", email="viktor.dick@perfact.de"},
+]
+description = "Basic tools for interacting with the database"
+readme = "README.md"
+license = {text = "GPL-2.0-or-later"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Database",
+]
+dependencies = []
+requires-python = ">=3.8"
+dynamic = ["version"]
+
+[project.scripts]
+
+[tool.setuptools.package-data]
+
+[tool.distutils.bdist_wheel]
+universal = 1
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["perfact.*"]
+
+[tool.setuptools_scm]

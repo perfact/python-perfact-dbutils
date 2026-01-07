@@ -1,0 +1,17 @@
+Source: python-perfact-dbutils
+Section: unknown
+Priority: optional
+Maintainer: Viktor Dick <viktor.dick@perfact.de>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+ python3,
+ pybuild-plugin-pyproject,
+Standards-Version: 4.6.2
+
+Package: python3-perfact-dbutils
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3,
+Description: Basic tools for interacting with the database
