@@ -76,10 +76,15 @@ class ZRDBConnectionWrapper:
         """
         Execute within a Zope transaction
         """
+        if not isinstance(query, str):
+            # We assume this is a ZSQLMethod
+            query = query(src__=1)
+
         res = self.conn.query(query, query_data=args)
         # Now we have a tuple with the first element containing a list of
         # column descriptions and the second containing the list of results
         return _prepare_result((col['name'] for col in res[0]), res[1])
+
 
 def wrap_zrdbconn(dbconn):
     return ZRDBConnectionWrapper(dbconn)
