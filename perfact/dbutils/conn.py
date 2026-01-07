@@ -1,42 +1,40 @@
-class Namespace(object):
+from typing import Protocol
+from dataclasses import dataclass
+from abc import abstractmethod
+
+
+class Namespace():
     """
     Convert a dict to a namespace, allowing access via a.b instead of a['b']
     """
     def __init__(self, data=None, **kw):
-        if data:
-            self.__dict__.update(data)
         self.__dict__.update(kw)
 
 
-def _dicts(result):
+@dataclass
+class Results:
     """
-    Create generator from result that yields dicts
+    Object representing the result of a query in a compact way with helper
+    functions that yield results in a more usable way.
     """
-    names = result.names
-    for row in result.tuples:
-        yield {key: value for key, value in zip(names, row)}
+    names: tuple[str]
+    tuples: list[tuple]
+
+    def dicts(self):
+        "Generate dicts from result"
+        for row in self.tuples:
+            yield {key: value for key, value in zip(self.names, row)}
+
+    def rows(self):
+        "Generate namespaces from result"
+        for row in self.dicts():
+            yield Namespace(**row)
 
 
-def _rows(result):
-    """
-    Create generator from result that yields namespaces
-    """
-    for row in _dicts(result):
-        yield Namespace(**row)
-
-
-def _prepare_result(names, rows):
-    """
-    Returns None if no names are given, otherwise a Namespace with "names" and
-    "tuples" as well as generators "dicts()" and "rows()" yielding the results
-    as dictionaries or namespaces.
-    """
-    if not names:
-        return
-    result = Namespace(names=tuple(names), tuples=rows)
-    result.dicts = lambda: _dicts(result)
-    result.rows = lambda: _rows(result)
-    return result
+class Executor(Protocol):
+    @abstractmethod
+    def execute(self, query, **args) -> [Results | None]:  # pragma: no cover
+        raise NotImplementedError
 
 
 class Connection:
@@ -48,7 +46,7 @@ class Connection:
     def __init__(self, conn):
         self.conn = conn
 
-    def execute(self, query, **args):
+    def execute(self, query, **args) -> [Results | None]:
         """
         Execute given query. Returns a namespace with "names" and "tuples". If
         parameters are to be used, they should be included in the form of
@@ -59,9 +57,9 @@ class Connection:
         rows = self.conn.execute(query, args)
         if not rows.description:
             return
-        return _prepare_result(
-            (col.name for col in rows.description),
-            rows.fetchall(),
+        return Results(
+            names=tuple(col.name for col in rows.description),
+            tuples=rows.fetchall(),
         )
 
 
@@ -72,7 +70,7 @@ class ZRDBConnectionWrapper:
     def __init__(self, conn):
         self.conn = conn._v_database_connection
 
-    def execute(self, query, **args):
+    def execute(self, query, **args) -> [Results | None]:
         """
         Execute within a Zope transaction
         """
@@ -83,7 +81,12 @@ class ZRDBConnectionWrapper:
         res = self.conn.query(query, query_data=args)
         # Now we have a tuple with the first element containing a list of
         # column descriptions and the second containing the list of results
-        return _prepare_result((col['name'] for col in res[0]), res[1])
+        if not res[0]:
+            return None
+        return Results(
+            names=tuple(col['name'] for col in res[0]),
+            tuples=res[1],
+        )
 
 
 def wrap_zrdbconn(dbconn):

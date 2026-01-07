@@ -13,5 +13,6 @@ Package: python3-perfact-dbutils
 Architecture: all
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  python3,
 Description: Basic tools for interacting with the database

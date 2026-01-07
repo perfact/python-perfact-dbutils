@@ -1,4 +1,4 @@
-name: Tox tests
+name: Build Package
 on:
   push:
     branches:
@@ -7,20 +7,47 @@ on:
 
 jobs:
   build:
-    runs-on: perfact-build-trixie
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-
+        target: ['jammy', 'bookworm', 'trixie']
+    runs-on: perfact-build-${{ matrix.target }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    - name: Change owner of build output Folder
+      run: sudo chown build:build /workspace/DebianPackages/ && echo OK!
+
+    - name: Update NMU changelog
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install tox tox-gh-actions
-    - name: Test with tox
-      run: tox
+        echo Setting environment Variables
+        export DEBFULLNAME=${{ github.actor }}
+        echo Debian Fullname: $DEBFULLNAME
+        export DEBEMAIL=${{ github.actor }}@perfact.de
+        echo Debian Email: $DEBEMAIL
+        debchange --nmu Automated build on commit: ${{ gitea.sha }}
+
+    - name: Update package sources
+      run: sudo apt update || true
+
+    - name: Install build dependencies
+      run: sudo apt build-dep -y .
+
+    - name: Build
+      run: dpkg-buildpackage
+
+    - name: Collect result files
+      run: |
+        rm -rf /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        mkdir -p /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}
+        cp /workspace/DebianPackages/*.buildinfo /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.changes /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.deb /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.dsc /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.tar.xz /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+
+    - name: Output the result as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.target }}
+        path: /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        overwrite: true
