@@ -1,3 +1,10 @@
+python-perfact-dbutils (0.2) unstable; urgency=medium
+
+  [ Viktor Dick ]
+  * Cover with tests
+
+ -- Viktor Dick <viktor.dick@perfact.de>  Wed, 07 Jan 2026 15:57:07 +0100
+
 python-perfact-dbutils (0.1) unstable; urgency=medium
 
   [ Viktor Dick ]
