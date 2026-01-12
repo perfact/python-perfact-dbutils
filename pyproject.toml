@@ -6,6 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "perfact-dbutils"
 authors = [
     {name="Viktor Dick", email="viktor.dick@perfact.de"},
+    {name="Alexander Rolfes", email="alexander.rolfes@perfact.de"},
+    {name="Ján Jockusch", email="jan.jockusch@perfact.de"},
 ]
 description = "Basic tools for interacting with the database"
 readme = "README.md"
@@ -15,7 +17,7 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Topic :: Database",
 ]
-dependencies = []
+dependencies = ["psycopg[c]"]
 requires-python = ">=3.8"
 dynamic = ["version"]
 

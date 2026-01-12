@@ -2,6 +2,7 @@
 *.swp
 perfact_dbutils.egg-info
 venv*
+doc/source/api
 .tox
 .coverage
 __pycache__

@@ -15,7 +15,7 @@ def test_psycopg(postgresql):
     assert len(list(res.dicts())) == 1
     # Query not returning anything
     res = conn.execute("create table appuser (appuser_id bigint)")
-    assert res is None
+    assert len(res.tuples) == 0
 
 
 class MockZRDBConnection:
@@ -52,4 +52,4 @@ def test_wrapper(postgresql):
     assert res.names == ('bla', )
     # Query not returning anything
     res = conn.execute("create table appuser (appuser_id bigint)")
-    assert res is None
+    assert len(res.tuples) == 0
