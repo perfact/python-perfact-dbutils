@@ -1,9 +1,9 @@
-python-perfact-dbutils (0.2+nmu1) UNRELEASED; urgency=medium
+python-perfact-dbutils (1.0) unstable; urgency=medium
 
-  * Non-maintainer upload.
+  [ Kai Joshua Martin ]
   * Add crud functions and tests.
 
- -- Kai Joshua Martin <kmartin@kmartin-notebook.kmartin-notebook>  Fri, 23 Jan 2026 16:23:20 +0100
+ -- Viktor Dick <viktor.dick@perfact.de>  Mon, 26 Jan 2026 12:35:45 +0100
 
 python-perfact-dbutils (0.2) unstable; urgency=medium
 
