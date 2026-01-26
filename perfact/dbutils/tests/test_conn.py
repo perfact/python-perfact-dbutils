@@ -1,4 +1,5 @@
 from ..conn import Connection, wrap_zrdbconn
+from psycopg2 import sql
 
 
 def test_psycopg(postgresql):
@@ -24,13 +25,17 @@ class MockZRDBConnection:
         self.conn = conn
 
     def query(self, query, query_data=None):
-        rows = self.conn.execute(query, query_data)
-        if not rows.description:
-            return (), []
-        return (
-            [{'name': col.name} for col in rows.description],
-            rows.fetchall(),
-        )
+        with self.conn.cursor() as cur:
+            cur.execute(query, query_data)
+            if not cur.description:
+                return (), []
+            return (
+                [{'name': col.name} for col in cur.description],
+                cur.fetchall(),
+            )
+
+    def getcursor(self):
+        return self.conn
 
 
 def generate_query(src__):
@@ -46,6 +51,10 @@ def test_wrapper(postgresql):
     conn = wrap_zrdbconn(mock)
     # Regular query
     res = conn.execute("select now() as ts")
+    assert res.names == ('ts', )
+    # Test wrapper with composed sql
+    query = sql.SQL("select now() as ts").format()
+    res = conn.execute(query)
     assert res.names == ('ts', )
     # Query generator, mocking ZSQLMethod
     res = conn.execute(generate_query)

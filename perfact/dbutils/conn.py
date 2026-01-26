@@ -2,7 +2,7 @@ from typing import Protocol, Optional, Any, Union, TypeAlias
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from abc import abstractmethod
-from psycopg import sql
+from psycopg2 import sql
 
 Query: TypeAlias = Union[sql.SQL, sql.Composed, str, Callable]
 
@@ -68,13 +68,14 @@ class Connection:
         rows() that provide generators for getting the results as dictionaries
         or namespaces.
         """
-        rows = self.conn.execute(query, args)
-        if not rows.description:
-            return Results(names=(), tuples=[])
-        return Results(
-            names=tuple(col.name for col in rows.description),
-            tuples=rows.fetchall(),
-        )
+        with self.conn.cursor() as cur:
+            cur.execute(query, args)
+            if not cur.description:
+                return Results(names=(), tuples=[])
+            return Results(
+                names=tuple(col.name for col in cur.description),
+                tuples=cur.fetchall(),
+            )
 
 
 class ZRDBConnectionWrapper:
@@ -96,6 +97,9 @@ class ZRDBConnectionWrapper:
         if callable(query):
             # We assume this is a ZSQLMethod
             query = query(src__=1)
+
+        if isinstance(query, sql.Composed):
+            query = query.as_string(self.conn.getcursor())
 
         res = self.conn.query(query, query_data=args)
         # Now we have a tuple with the first element containing a list of
