@@ -211,8 +211,8 @@ def delete(
 
 def _read_query(
         table: str,
-        columns: list[str] = [],
-        ident: Mapping[str, Any] = {},
+        columns: Optional[list[str]] = None,
+        ident: Optional[Mapping[str, Any]] = None,
         where: Optional[Conditions] = None,
         orderby: Optional[list[tuple[str, str] | str]] = None,
         limit: Optional[int] = None,
@@ -285,8 +285,8 @@ def _read_query(
 def read(
         conn: Executor,
         table: str,
-        columns: list[str] = [],
-        ident: Mapping[str, Any] = {},
+        columns: Optional[list[str]] = None,
+        ident: Optional[Mapping[str, Any]] = None,
         where: Optional[Conditions] = None,
         orderby: Optional[list[tuple[str, str] | str]] = None,
         limit: Optional[int] = None,
