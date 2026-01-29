@@ -26,11 +26,8 @@ def _create_query(
     """Generate an SQL Insert statement based on the given table and columns
 
     :param table: Tablename in the database
-    :type table: str
     :param columns: List of full column names to insert values for
-    :type columns: Optional[Sequence[str]]
     :return: The SQL insert statement
-    :rtype: sql.Composed
     """
     if columns:
         return sql.SQL(
@@ -56,13 +53,9 @@ def create(
 
     :param conn: Connection object to database where the
         entry should be created
-    :type conn: Executor
     :param table: Name of table in the database
-    :type table: str
     :param payload: Mapping of full column names and values
-    :type payload: Optional[Mapping[str, Any]]
     :return: The content of the created entry
-    :rtype: Mapping[str, Any]
     """
     if payload is None:
         payload = {}
@@ -85,17 +78,12 @@ def _update_query(
         payload
 
     :param table: The name of the table to update
-    :type table: str
     :param ident: Mapping of full column name and value for the row to update
-    :type ident: Mapping[str, Any]
     :param payload: Mapping of full column names and new values to set
-    :type payload: Mapping[str, Any]
     :param auditmode: Flag to enable or disable audit mode, which sets
         author and modtime columns if they are not already included in the
         payload
-    :type auditmode: bool
     :return: The SQL update statement
-    :rtype: sql.Composed
     """
     ident_conditions = _generate_ident_conditions(ident, prefix='ident')
 
@@ -142,20 +130,15 @@ def update(
 ) -> None:
     """
     Update a row in the specified table based on the provided ident
-        and payload.
+    and payload.
 
     :param conn: Database connection to use for the update operation
-    :type conn: Executor
     :param table: The name of the table to update
-    :type table: str
     :param ident: Mapping of full column name and value for the row to update
-    :type ident: Mapping[str, Any]
     :param payload: Mapping of full column names and new values to set
-    :type payload: Mapping[str, Any]
     :param auditmode: Flag to enable or disable audit mode which sets
         author and modtime columns if they are not already included in the
         payload
-    :type auditmode: bool
     """
     args = {f'ident_{k}': v for k, v in ident.items()}
     args.update(payload)
@@ -170,12 +153,9 @@ def _delete_query(
     Generate an SQL Delete statement based on the given table and ident
 
     :param table: The name of the table to delete from
-    :type table: str
     :param ident: A mapping of column names to values for identifying the
         row(s) to delete
-    :type ident: Mapping[str, Any]
     :return: The SQL delete statement
-    :rtype: sql.Composed
     """
     ident_conditions = _generate_ident_conditions(ident)
 
@@ -199,12 +179,9 @@ def delete(
 
     :param conn: The database connection to use for executing the delete
         operation
-    :type conn: Executor
     :param table: The name of the table to delete from
-    :type table: str
     :param ident: A mapping of column names to values for identifying the
         row(s) to delete
-    :type ident: Mapping[str, Any]
     """
     conn.execute(_delete_query(table, ident), **ident)
 
@@ -222,32 +199,24 @@ def _read_query(
     Generate an SQL select statement based on the given params.
 
     :param table: Name of the table
-    :type table: str
 
     :param columns: List of column names that should be selected
-    :type column: list[str]
 
     :param ident: A mapping of column names to values for identifying the rows
         that should be selected
-    :type ident: Mapping[str, Any]
 
     :param where: Dict containing an sql where expression and a payload if
         necessary. The dict has the following fields: stmt, payload. Optional.
         Defaults to None.
-    :type where: Conditions
 
     :param orderby: List of order by expression. Each row can either be a
         string (colname) or a tuple of two strings (colname, (asc|desc)).
-    :type orderby: list[tuple[str, str] | str]
 
     :param limit: Limit for the query
-    :type limit: int
 
     :param for_update: If true, the selected rows will be locked for update
-    :type for_update: bool
 
     :returns: Returns the generated select statement
-    :rtype: sql.Composed
     """
 
     # Prepare replacements
@@ -297,35 +266,26 @@ def read(
 
     :param conn: The database connection to use for executing the read
         operation
-    :type conn: Executor
 
     :param table: Name of the table
-    :type table: str
 
     :param columns: List of column names that should be selected
-    :type column: list[str]
 
     :param ident: A mapping of column names to values for identifying the rows
         that should be selected
-    :type ident: Mapping[str, Any]
 
     :param where: Dict containing an sql where expression and a payload if
         necessary. The dict has the following fields: stmt, payload. Optional.
         Defaults to None.
-    :type where: Conditions
 
     :param orderby: List of order by expression. Each row can either be a
         string (colname) or a tuple of two strings (colname, (asc|desc)).
-    :type orderby: list[tuple[str, str] | str]
 
     :param limit: Limit for the query
-    :type limit: int
 
     :param for_update: If true, the selected rows will be locked for update
-    :type for_update: bool
 
     :returns: Returns a list of dicts containing the selected rows
-    :rtype: list[Mapping[str, Any]]
     """
     args = {}
     if ident:
@@ -354,10 +314,8 @@ def _build_order_by(
 
     :param orderby: List of order by expression. Each row can either be a
         string (colname) or a tuple of two strings (colname, (asc|desc)).
-    :type orderby: list[tuple[str, str] | str]
 
     :returns: Returns an sql order by expression
-    :rtype: sql.Composed
     """
 
     allowed_sort_direction = {
@@ -406,11 +364,8 @@ def _generate_ident_conditions(
     Generate SQL conditions for identifying rows based on the given ident
 
     :param ident: A mapping of column names to values for identifying rows
-    :type ident: Mapping[str, Any]
     :param prefix: An optional prefix to add to the placeholder names
-    :type prefix: Optional[str]
     :return: A list of SQL conditions for the ident
-    :rtype: list[SQL]
     """
     ident_conditions: list[sql.SQL | sql.Composed] = [sql.SQL('true')]
     for column, value in ident.items():

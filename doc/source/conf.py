@@ -15,6 +15,7 @@ author = 'Alexander Rolfes, Viktor Dick, Ján Jockusch'
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
@@ -35,3 +36,7 @@ html_static_path = ['_static']
 # https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#configuration
 
 todo_include_todos = True
+
+# -- Options for auto documentation of typehints -----------------------------
+
+always_document_param_types = True
