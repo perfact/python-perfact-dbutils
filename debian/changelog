@@ -1,3 +1,10 @@
+python-perfact-dbutils (1.0+nmu2) UNRELEASED; urgency=medium
+
+  * Non-maintainer upload.
+  * Move generated documentation into filesystem. Docs will be found in /usr/share/doc/python3-perfact-dbutils/
+
+ -- Kai Joshua Martin <kmartin@kmartin-notebook.kmartin-notebook>  Thu, 29 Jan 2026 17:23:25 +0100
+
 python-perfact-dbutils (1.0+nmu1) UNRELEASED; urgency=medium
 
   [ Alexander Rolfes ]

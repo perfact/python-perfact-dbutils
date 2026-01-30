@@ -10,10 +10,12 @@ build
 dist
 .temp-venv
 .wheels
-debian/python3-perfact-dbutils*
-debian/.debhelper
+debian/python3-perfact-dbutils
+debian/*.debhelper
+debian/*.debhelper.log
 debian/debhelper-build-stamp
 debian/files
+debian/*.substvars
 tags
 tags.lock
 tags.temp
