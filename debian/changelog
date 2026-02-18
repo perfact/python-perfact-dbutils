@@ -1,9 +1,9 @@
-python-perfact-dbutils (1.1+nmu1) UNRELEASED; urgency=medium
+python-perfact-dbutils (1.2) unstable; urgency=medium
 
   [ Alexander Rolfes ]
   * Fix build for jammy not containing any files 
 
- -- Alexander Rolfes <alexander.rolfes@perfact.de>  Tue, 17 Feb 2026 10:33:23 +0100
+ -- Viktor Dick <viktor.dick@perfact.de>  Wed, 18 Feb 2026 07:07:04 +0100
 
 python-perfact-dbutils (1.1) unstable; urgency=medium
 
