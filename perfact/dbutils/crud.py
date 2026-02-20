@@ -56,6 +56,19 @@ def create(
     :param table: Name of table in the database
     :param payload: Mapping of full column names and values
     :return: The content of the created entry
+
+    .. code-block:: python
+
+        from perfact.dbutils.crud import create
+
+        res = create(
+            conn=conn,
+            table='test',
+            payload={
+                'test_title': 'Hello World'
+            }
+        )
+        test_id = res['test_id']
     """
     if payload is None:
         payload = {}
@@ -139,6 +152,21 @@ def update(
     :param auditmode: Flag to enable or disable audit mode which sets
         author and modtime columns if they are not already included in the
         payload
+
+    .. code-block:: python
+
+        from perfact.dbutils.crud import update
+
+        update(
+            conn=conn,
+            table='test',
+            ident={
+                'test_id': 1,
+            }
+            payload={
+                'test_title': 'Hello World'
+            }
+        )
     """
     args = {f'ident_{k}': v for k, v in ident.items()}
     args.update(payload)
@@ -182,6 +210,18 @@ def delete(
     :param table: The name of the table to delete from
     :param ident: A mapping of column names to values for identifying the
         row(s) to delete
+
+    .. code-block:: python
+
+        from perfact.dbutils.crud import delete
+
+        delete(
+            conn=conn,
+            table='test',
+            ident={
+                'test_id': 1,
+            }
+        )
     """
     conn.execute(_delete_query(table, ident), **ident)
 
@@ -286,6 +326,30 @@ def read(
     :param for_update: If true, the selected rows will be locked for update
 
     :returns: Returns a list of dicts containing the selected rows
+
+    .. code-block:: python
+
+        from perfact.dbutils.crud import read
+
+        res = read(
+            conn=conn,
+            table='test',
+            ident={
+                'test_title': 'Hello World',
+            }
+            where={
+                'stmt': 'test_id > %(offset)s',
+                'payload': {
+                    'offset': 100,
+                }
+            },
+            orderby=[
+                ('test_modtime', 'desc'),
+                'test_id',
+            ]
+        )
+        for entry in res:
+            print(entry['test_id'])
     """
     args = {}
     if ident:

@@ -1,68 +1,38 @@
 # test cases for crud module
-from typing import Any
 from ..crud import create, update, delete, read
 from ..conn import Connection as DBConnection
-import psycopg2
-import psycopg
-from pytest_postgresql import factories
-from pytest_postgresql.janitor import DatabaseJanitor
 import pytest
 
 
-def load_database(**kwargs: Any) -> None:
-    db_connection: psycopg.Connection = psycopg.connect(**kwargs)
-    with db_connection.cursor() as cur:
-        # generic initialization for all tests
-        cur.execute(
-            "CREATE TABLE appuser "
-            "(appuser_id serial PRIMARY KEY, "
-            "appuser_author varchar, "
-            "appuser_modtime timestamp default current_timestamp, "
-            "appuser_name varchar, "
-            "appuser_fullname varchar);"
-        )
-        cur.execute(
-            "create or replace function db_username() "
-            "returns text as $$ "
-            "begin "
-            "   return 'test_user'; "
-            "end; "
-            "$$ language plpgsql;")
-        db_connection.commit()
+@pytest.fixture(scope="function")
+def conn(postgresql):
+    """
+    Create records in test, testlc, testlct.
+    """
+    conn = DBConnection(postgresql)
+    conn.execute(
+        "CREATE TABLE appuser "
+        "(appuser_id serial PRIMARY KEY, "
+        "appuser_author varchar, "
+        "appuser_modtime timestamp default current_timestamp, "
+        "appuser_name varchar, "
+        "appuser_fullname varchar);"
+    )
+    conn.execute(
+        "create or replace function db_username() "
+        "returns text as $$ "
+        "begin "
+        "   return 'test_user'; "
+        "end; "
+        "$$ language plpgsql;"
+    )
+    yield conn
 
 
-postgresql_proc = factories.postgresql_proc(
-    load=[load_database],
-)
-
-
-@pytest.fixture(scope='function')
-def postgresql(postgresql_proc: Any) -> Any:
-    """A PostgreSQL database."""
-    with DatabaseJanitor(
-        user=postgresql_proc.user,
-        host=postgresql_proc.host,
-        port=postgresql_proc.port,
-        dbname=postgresql_proc.dbname,
-        version=postgresql_proc.version,
-        password=postgresql_proc.password,
-    ) as janitor:
-        janitor.load(load_database)
-        with psycopg2.connect(
-            dbname=postgresql_proc.dbname,
-            user=postgresql_proc.user,
-            password=postgresql_proc.password,
-            host=postgresql_proc.host,
-            port=postgresql_proc.port,
-        ) as db_connection:
-            yield db_connection
-
-
-def test_create(postgresql):
+def test_create(conn):
     """
     Test the create function.
     """
-    conn = DBConnection(postgresql)
     # create entry
     payload = {'appuser_name': 'Alice', 'appuser_fullname': 'Alice Smith'}
     res = create(conn=conn, table='appuser', payload=payload)
@@ -71,11 +41,10 @@ def test_create(postgresql):
     assert res['appuser_fullname'] == 'Alice Smith'
 
 
-def test_create_default_values(postgresql):
+def test_create_default_values(conn):
     """
     Test the create function with default values.
     """
-    conn = DBConnection(postgresql)
     # create entry with default values
     res = create(conn=conn, table='appuser')
     assert res['appuser_id'] == 1
@@ -83,11 +52,10 @@ def test_create_default_values(postgresql):
     assert res['appuser_fullname'] is None
 
 
-def test_create_prevented(postgresql):
+def test_create_prevented(conn):
     """
     Test that an insert that is prevented by a trigger returns None
     """
-    conn = DBConnection(postgresql)
     conn.execute("""
         create or replace function prevent_inserts()
         returns trigger language plpgsql as $function$
@@ -103,11 +71,10 @@ def test_create_prevented(postgresql):
     assert res.tuples == []
 
 
-def test_update(postgresql):
+def test_update(conn):
     """
     Test the update function.
     """
-    conn = DBConnection(postgresql)
     # create initial entry
     payload = {'appuser_name': 'bob', 'appuser_fullname': 'Bob Smith'}
     inserted = create(conn=conn, table='appuser', payload=payload)
@@ -127,11 +94,10 @@ def test_update(postgresql):
     assert updated['appuser_modtime'] is not None
 
 
-def test_update_ident_is_null(postgresql):
+def test_update_ident_is_null(conn):
     """
     Test the update function with ident containing None value.
     """
-    conn = DBConnection(postgresql)
     payload = {'appuser_name': 'Charlie', 'appuser_fullname': None}
     inserted = create(conn=conn, table='appuser', payload=payload)
     # Update entry where age is null
@@ -150,12 +116,11 @@ def test_update_ident_is_null(postgresql):
     assert updated['appuser_modtime'] is not None
 
 
-def test_update_no_auditmode(postgresql):
+def test_update_no_auditmode(conn):
     """
     Test the update function with auditmode disabled.
     also tests update with only one column in up
     """
-    conn = DBConnection(postgresql)
     # create initial entry
     payload = {'appuser_name': 'Eve', 'appuser_fullname': 'Eve Adams'}
     inserted = create(conn=conn, table='appuser', payload=payload)
@@ -176,11 +141,10 @@ def test_update_no_auditmode(postgresql):
     assert updated['appuser_modtime'] == inserted['appuser_modtime']
 
 
-def test_update_in_ident(postgresql):
+def test_update_in_ident(conn):
     """
     Test the update function where a column in ident is also in payload.
     """
-    conn = DBConnection(postgresql)
     # create initial entry
     payload = {'appuser_name': 'Frank', 'appuser_fullname': 'Frank Miller'}
     inserted = create(conn=conn, table='appuser', payload=payload)
@@ -201,11 +165,10 @@ def test_update_in_ident(postgresql):
     assert updated['appuser_modtime'] is not None
 
 
-def test_delete(postgresql):
+def test_delete(conn):
     """
     Test the delete function.
     """
-    conn = DBConnection(postgresql)
     # create initial entry
     payload = {'appuser_name': 'Diana', 'appuser_fullname': 'Diana Prince'}
     inserted = create(conn=conn, table='appuser', payload=payload)
@@ -236,11 +199,10 @@ def _setup_read_testdata(conn):
     create(conn=conn, table='appuser', payload=payload)
 
 
-def test_read_simple(postgresql):
+def test_read_simple(conn):
     """
     Test a simple select all.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
 
     selected = read(
@@ -252,11 +214,10 @@ def test_read_simple(postgresql):
     assert len(selected[0]) == 5
 
 
-def test_read_columns(postgresql):
+def test_read_columns(conn):
     """
     Test a read operation with specified columns.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
 
     selected = read(
@@ -277,11 +238,10 @@ def test_read_columns(postgresql):
     assert 'appuser_name' in selected[0]
 
 
-def test_read_ident(postgresql):
+def test_read_ident(conn):
     """
     Test a read operation with specified ident.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
 
     selected = read(
@@ -301,11 +261,10 @@ def test_read_ident(postgresql):
     assert len(selected) == 2
 
 
-def test_read_where(postgresql):
+def test_read_where(conn):
     """
     Test a read operation with specified where expression.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
     # Test where with stmt and payload
     selected = read(
@@ -351,11 +310,10 @@ def test_read_where(postgresql):
     assert not selected
 
 
-def test_read_orderby(postgresql):
+def test_read_orderby(conn):
     """
     Test a read operation with specified order by expression.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
     # Simple order by with list of str
     selected = read(
@@ -394,11 +352,10 @@ def test_read_orderby(postgresql):
         )
 
 
-def test_read_limit(postgresql):
+def test_read_limit(conn):
     """
     Test a read operation with specified limit.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
     selected = read(
         conn=conn,
@@ -408,11 +365,10 @@ def test_read_limit(postgresql):
     assert len(selected) == 1
 
 
-def test_read_for_update(postgresql):
+def test_read_for_update(conn):
     """
     Test a read operation with for_update set.
     """
-    conn = DBConnection(postgresql)
     _setup_read_testdata(conn=conn)
     read(
         conn=conn,
