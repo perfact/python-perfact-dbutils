@@ -1,9 +1,10 @@
-python-perfact-dbutils (1.2+nmu1) UNRELEASED; urgency=medium
+python-perfact-dbutils (1.3.0) unstable; urgency=medium
 
-  * Non-maintainer upload.
+  [ Kai Joshua Martin ]
   * Add lcc transitions functions and tests
+  * Add allowedclasses module
 
- -- Kai Joshua Martin <kmartin@kmartin-notebook.kmartin-notebook>  Wed, 18 Feb 2026 15:26:00 +0100
+ -- Viktor Dick <viktor.dick@perfact.de>  Thu, 26 Feb 2026 14:17:30 +0100
 
 python-perfact-dbutils (1.2) unstable; urgency=medium
 
