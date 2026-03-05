@@ -1,3 +1,10 @@
+python-perfact-dbutils (1.3.0+nmu1) UNRELEASED; urgency=medium
+
+  [ Alexander Rolfes ]
+  * Added marker py.typed to mark module dbutils as typed
+
+ -- Alexander Rolfes <alexander.rolfes@perfact.de>  Wed, 04 Mar 2026 16:10:02 +1100
+
 python-perfact-dbutils (1.3.0) unstable; urgency=medium
 
   [ Kai Joshua Martin ]

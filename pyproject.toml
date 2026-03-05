@@ -24,6 +24,7 @@ dynamic = ["version"]
 [project.scripts]
 
 [tool.setuptools.package-data]
+"perfact.dbutils" = ["py.typed"]
 
 [tool.distutils.bdist_wheel]
 universal = 1
