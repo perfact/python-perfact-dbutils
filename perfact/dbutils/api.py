@@ -150,6 +150,32 @@ class LCC():
         self.side_effect_resolver = side_effect_resolver
 
 
+class SelfilterGenerator(Protocol):
+    """
+    Class describing the signature of the coded_hooks_resolver function. The
+    coded hooks resolver function must have the following signature:
+
+    :param table: Name of the table
+    :type table: str
+
+    :param column: ID of the source lc
+    :type column: int
+
+    :param kw: Additonal keyword arguments
+    :type kw: Any
+
+    :return: Returns the selfilter for the given table and column
+    :rtype: str
+    """
+
+    def __call__(
+            self,
+            table: str,
+            column: int,
+            **kw: Any,
+    ) -> str: ...
+
+
 class Context():
     """
     Class for the ctx object
@@ -159,6 +185,8 @@ class Context():
     :param lcc: LCC object, containing functions to resolve the lcc hooks
     :param lib: Pointer to the lib context
     :param api: Pointer to the api context
+    :param selfilter_generator: Pointer to a function that can generate the
+        selfilter for a table.
     """
 
     def __init__(
@@ -168,9 +196,11 @@ class Context():
             lcc: LCC,
             lib: Any,
             api: Any,
+            selfilter_generator: SelfilterGenerator
     ):
         self.conn = conn
         self.user = user
         self.lib = lib
         self.lcc = lcc
         self.api = api
+        self.selfilter_generator = selfilter_generator

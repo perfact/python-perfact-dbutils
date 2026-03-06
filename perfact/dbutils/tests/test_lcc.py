@@ -147,6 +147,7 @@ def ctx(conn):
             side_effect_resolver=None,
         ),
         api=None,
+        selfilter_generator=None,
     )
 
 
@@ -696,6 +697,7 @@ def test_collect_hooks(conn):
         ),
         lcc=None,
         api=None,
+        selfilter_generator=None,
     )
 
     side_effect_resolver_func('no_path')  # for full coverage test
@@ -955,6 +957,7 @@ def test_transition_with_hooks(conn):
             )
         ),
         api=None,
+        selfilter_generator=None,
     )
 
     transition_with_hooks(
@@ -1035,6 +1038,7 @@ def test_trigger_lct_events(conn):
         ),
         lcc=None,
         api=None,
+        selfilter_generator=None,
     )
     lct_evt_executed = False
     progname_evt_executed = False
