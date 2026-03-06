@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 from typing import Any
 
+import psycopg2
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
-import psycopg2
 
 
-@pytest.fixture(scope='function')
-def postgresql(
-        postgresql_proc: Any
-) -> Any:
+@pytest.fixture(scope="function")
+def postgresql(postgresql_proc: Any) -> Any:
     """A PostgreSQL database."""
     with DatabaseJanitor(
         user=postgresql_proc.user,

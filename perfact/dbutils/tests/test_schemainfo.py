@@ -1,7 +1,8 @@
 # test cases for crud module
-from ..schemainfo import get_columns
-from ..conn import Connection as DBConnection
 import pytest
+
+from ..conn import Connection as DBConnection
+from ..schemainfo import get_columns
 
 
 @pytest.fixture(scope="function")
@@ -33,27 +34,19 @@ def test_get_columns_fullname(conn):
     """
     Test the get_columns function
     """
-    res = get_columns(
-        conn=conn,
-        table='appuser',
-        full_colname=True
-    )
+    res = get_columns(conn=conn, table="appuser", full_colname=True)
     print(res)
     assert len(res) == 5
-    assert 'appuser_id' in res
+    assert "appuser_id" in res
 
 
 def test_get_columns_colname_only(conn):
     """
     Test the get_columns function
     """
-    res = get_columns(
-        conn=conn,
-        table='appuser',
-        full_colname=False
-    )
+    res = get_columns(conn=conn, table="appuser", full_colname=False)
     assert len(res) == 5
-    assert 'id' in res
+    assert "id" in res
 
 
 def test_get_columns_with_no_columns(conn):
@@ -62,6 +55,6 @@ def test_get_columns_with_no_columns(conn):
     """
     res = get_columns(
         conn=conn,
-        table='empty_table',
+        table="empty_table",
     )
     assert len(res) == 0

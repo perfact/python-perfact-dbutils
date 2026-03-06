@@ -1,5 +1,6 @@
-from ..conn import Connection, wrap_zrdbconn
 from psycopg2 import sql
+
+from ..conn import Connection, wrap_zrdbconn
 
 
 def test_psycopg(postgresql):
@@ -10,7 +11,7 @@ def test_psycopg(postgresql):
     res = conn.execute("""
       select now() as ts
     """)
-    assert res.names == ('ts', )
+    assert res.names == ("ts",)
     assert len(res.tuples) == 1
     assert len(list(res.rows())) == 1
     assert len(list(res.dicts())) == 1
@@ -30,7 +31,7 @@ class MockZRDBConnection:
             if not cur.description:
                 return (), []
             return (
-                [{'name': col.name} for col in cur.description],
+                [{"name": col.name} for col in cur.description],
                 cur.fetchall(),
             )
 
@@ -51,14 +52,14 @@ def test_wrapper(postgresql):
     conn = wrap_zrdbconn(mock)
     # Regular query
     res = conn.execute("select now() as ts")
-    assert res.names == ('ts', )
+    assert res.names == ("ts",)
     # Test wrapper with composed sql
     query = sql.SQL("select now() as ts").format()
     res = conn.execute(query)
-    assert res.names == ('ts', )
+    assert res.names == ("ts",)
     # Query generator, mocking ZSQLMethod
     res = conn.execute(generate_query)
-    assert res.names == ('bla', )
+    assert res.names == ("bla",)
     # Query not returning anything
     res = conn.execute("create table appuser (appuser_id bigint)")
     assert len(res.tuples) == 0

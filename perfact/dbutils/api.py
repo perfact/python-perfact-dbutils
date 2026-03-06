@@ -1,8 +1,9 @@
-from typing import Callable, Any, Protocol, Optional, TypedDict
+from typing import Any, Callable, Optional, Protocol, TypedDict
+
 from .conn import Executor
 
 
-class User():
+class User:
     """
     Class for the user object within the Context object
 
@@ -14,11 +15,11 @@ class User():
     """
 
     def __init__(
-            self,
-            name: str,
-            user_roles: list[str],
-            is_manager: Callable[[], bool],
-            user_has_role: Callable[[list[str]], bool],
+        self,
+        name: str,
+        user_roles: list[str],
+        is_manager: Callable[[], bool],
+        user_has_role: Callable[[list[str]], bool],
     ):
         self.name = name
         self.user_roles = user_roles
@@ -46,17 +47,12 @@ class CodedHook(Protocol):
     :type table: str
     """
 
-    def __call__(
-            self,
-            conn: Executor,
-            id: int,
-            table: str,
-            **kw: Any
-    ): ...
+    def __call__(self, conn: Executor, id: int, table: str, **kw: Any): ...
 
 
 class MayResult(TypedDict):
     """The MayResult dict may be returned by may hooks"""
+
     may: bool
     """True if the lc transition is allowed. Otherwise false."""
     hint: str
@@ -89,11 +85,7 @@ class MayHook(Protocol):
     """
 
     def __call__(
-            self,
-            conn: Executor,
-            id: int,
-            table: str,
-            **kw
+        self, conn: Executor, id: int, table: str, **kw
     ) -> bool | MayResult: ...
 
 
@@ -122,16 +114,16 @@ class CodedHooksResolver(Protocol):
     """
 
     def __call__(
-            self,
-            table: str,
-            src_lc_id: int,
-            tgt_lc_id: int,
-            hook_name: str,
-            hook_path: Optional[str] = None
+        self,
+        table: str,
+        src_lc_id: int,
+        tgt_lc_id: int,
+        hook_name: str,
+        hook_path: Optional[str] = None,
     ) -> CodedHook | MayHook | None: ...
 
 
-class LCC():
+class LCC:
     """
     Class for the lcc object within the Context object
 
@@ -142,9 +134,9 @@ class LCC():
     """
 
     def __init__(
-            self,
-            coded_hooks_resolver: CodedHooksResolver,
-            side_effect_resolver: Callable[[str], Callable],
+        self,
+        coded_hooks_resolver: CodedHooksResolver,
+        side_effect_resolver: Callable[[str], Callable],
     ):
         self.coded_hooks_resolver = coded_hooks_resolver
         self.side_effect_resolver = side_effect_resolver
@@ -169,14 +161,14 @@ class SelfilterGenerator(Protocol):
     """
 
     def __call__(
-            self,
-            table: str,
-            column: int,
-            **kw: Any,
+        self,
+        table: str,
+        column: int,
+        **kw: Any,
     ) -> str: ...
 
 
-class Context():
+class Context:
     """
     Class for the ctx object
 
@@ -190,13 +182,13 @@ class Context():
     """
 
     def __init__(
-            self,
-            conn: Executor,
-            user: User,
-            lcc: LCC,
-            lib: Any,
-            api: Any,
-            selfilter_generator: SelfilterGenerator
+        self,
+        conn: Executor,
+        user: User,
+        lcc: LCC,
+        lib: Any,
+        api: Any,
+        selfilter_generator: SelfilterGenerator,
     ):
         self.conn = conn
         self.user = user

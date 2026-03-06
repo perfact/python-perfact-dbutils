@@ -36,3 +36,9 @@ include-package-data = false
 include = ["perfact.*"]
 
 [tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 88
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["B9"]

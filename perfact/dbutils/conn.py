@@ -1,13 +1,14 @@
-from typing import Protocol, Optional, Any, Union, TypeAlias
+from abc import abstractmethod
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from abc import abstractmethod
+from typing import Any, Optional, Protocol, TypeAlias, Union
+
 from psycopg2 import sql
 
 Query: TypeAlias = Union[sql.SQL, sql.Composed, str, Callable]
 
 
-class Namespace():
+class Namespace:
     """
     Convert a dict to a namespace, allowing access via a.b instead of a['b']
     """
@@ -22,6 +23,7 @@ class Results:
     Object representing the result of a query in a compact way with helper
     functions that yield results in a more usable way.
     """
+
     names: tuple[str, ...]
     tuples: list[tuple]
 
@@ -39,10 +41,8 @@ class Results:
 class Executor(Protocol):
     @abstractmethod
     def execute(
-            self,
-            query: Query,
-            **args: Optional[Mapping[str, Any]]
-            ) -> Results:  # pragma: no cover
+        self, query: Query, **args: Optional[Mapping[str, Any]]
+    ) -> Results:  # pragma: no cover
         raise NotImplementedError
 
 
@@ -56,11 +56,7 @@ class Connection:
     def __init__(self, conn):
         self.conn = conn
 
-    def execute(
-            self,
-            query: Query,
-            **args: Optional[Mapping[str, Any]]
-            ) -> Results:
+    def execute(self, query: Query, **args: Optional[Mapping[str, Any]]) -> Results:
         """
         Execute given query. Returns a namespace with "names" and "tuples". If
         parameters are to be used, they should be included in the form of
@@ -86,11 +82,7 @@ class ZRDBConnectionWrapper:
     def __init__(self, conn):
         self.conn = conn._v_database_connection
 
-    def execute(
-            self,
-            query: Query,
-            **args: Optional[Mapping[str, Any]]
-            ) -> Results:
+    def execute(self, query: Query, **args: Optional[Mapping[str, Any]]) -> Results:
         """
         Execute within a Zope transaction
         """
@@ -107,7 +99,7 @@ class ZRDBConnectionWrapper:
         if not res[0]:
             return Results(names=(), tuples=[])
         return Results(
-            names=tuple(col['name'] for col in res[0]),
+            names=tuple(col["name"] for col in res[0]),
             tuples=res[1],
         )
 

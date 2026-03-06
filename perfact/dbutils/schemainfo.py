@@ -1,14 +1,12 @@
 from __future__ import annotations
-from .conn import Executor
+
 from collections.abc import Mapping
 from typing import Any
 
+from .conn import Executor
 
-def get_columns(
-        conn: Executor,
-        table: str,
-        full_colname: bool = True
-) -> list[str]:
+
+def get_columns(conn: Executor, table: str, full_colname: bool = True) -> list[str]:
     """Get the column names for a given table.
 
     :param conn: Connection object to database where the table is stored
@@ -26,7 +24,7 @@ def get_columns(
         where table_schema not in ( 'pg_catalog', 'information_schema', 'hist')
           and table_name = %(table)s
     """
-    payload: Mapping[str, Any] = {'table': table}
+    payload: Mapping[str, Any] = {"table": table}
     res = conn.execute(query=query, **payload)
     columns = next(iter(res.rows())).columns
     if not columns:
