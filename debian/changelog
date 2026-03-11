@@ -1,15 +1,12 @@
-python-perfact-dbutils (1.4.0+nmu2) UNRELEASED; urgency=medium
+python-perfact-dbutils (1.5.0) unstable; urgency=medium
 
-  * Non-maintainer upload.
+  [ Kai Joshua Martin ]
   * Make selfilter_generator param optional for context object
 
- -- Kai Joshua Martin <kmartin@kmartin-notebook.kmartin-notebook>  Tue, 10 Mar 2026 15:45:37 +0100
-
-python-perfact-dbutils (1.4.0+nmu1) UNRELEASED; urgency=medium
-
+  [ Viktor Dick ]
   * Use ruff
 
- -- Viktor Dick <viktor.dick@perfact.de>  Fri, 06 Mar 2026 11:22:01 +0100
+ -- Viktor Dick <viktor.dick@perfact.de>  Wed, 11 Mar 2026 11:17:59 +0100
 
 python-perfact-dbutils (1.4.0) unstable; urgency=medium
 
