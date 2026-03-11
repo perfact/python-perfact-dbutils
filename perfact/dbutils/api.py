@@ -1,8 +1,10 @@
+from dataclasses import dataclass
 from typing import Any, Callable, Optional, Protocol, TypedDict
 
 from .conn import Executor
 
 
+@dataclass
 class User:
     """
     Class for the user object within the Context object
@@ -11,20 +13,12 @@ class User:
     :param user_roles: List of active user roles
     :param is_manager: Pointer to the function is_manager
     :param user_has_role: Pointer to the function is_manager user_has_role
-
     """
 
-    def __init__(
-        self,
-        name: str,
-        user_roles: list[str],
-        is_manager: Callable[[], bool],
-        user_has_role: Callable[[list[str]], bool],
-    ):
-        self.name = name
-        self.user_roles = user_roles
-        self.is_manager = is_manager
-        self.user_has_role = user_has_role
+    name: str
+    user_roles: list[str]
+    is_manager: Callable[[], bool]
+    user_has_role: Callable[[list[str]], bool]
 
 
 class CodedHook(Protocol):
@@ -123,6 +117,7 @@ class CodedHooksResolver(Protocol):
     ) -> CodedHook | MayHook | None: ...
 
 
+@dataclass
 class LCC:
     """
     Class for the lcc object within the Context object
@@ -133,13 +128,8 @@ class LCC:
         resolve the side effects.
     """
 
-    def __init__(
-        self,
-        coded_hooks_resolver: CodedHooksResolver,
-        side_effect_resolver: Callable[[str], Callable],
-    ):
-        self.coded_hooks_resolver = coded_hooks_resolver
-        self.side_effect_resolver = side_effect_resolver
+    coded_hooks_resolver: CodedHooksResolver
+    side_effect_resolver: Callable[[str], Callable]
 
 
 class SelfilterGenerator(Protocol):
@@ -150,8 +140,8 @@ class SelfilterGenerator(Protocol):
     :param table: Name of the table
     :type table: str
 
-    :param column: ID of the source lc
-    :type column: int
+    :param column: Name of the column
+    :type column: str
 
     :param kw: Additonal keyword arguments
     :type kw: Any
@@ -163,11 +153,20 @@ class SelfilterGenerator(Protocol):
     def __call__(
         self,
         table: str,
-        column: int,
+        column: str,
         **kw: Any,
     ) -> str: ...
 
 
+def dummy_selfilter_gen(
+    table: str,
+    column: str,
+    **kw: Any,
+) -> str:
+    return ""
+
+
+@dataclass
 class Context:
     """
     Class for the ctx object
@@ -181,18 +180,9 @@ class Context:
         selfilter for a table.
     """
 
-    def __init__(
-        self,
-        conn: Executor,
-        user: User,
-        lcc: LCC,
-        lib: Any,
-        api: Any,
-        selfilter_generator: SelfilterGenerator,
-    ):
-        self.conn = conn
-        self.user = user
-        self.lib = lib
-        self.lcc = lcc
-        self.api = api
-        self.selfilter_generator = selfilter_generator
+    conn: Executor
+    user: User
+    lcc: LCC
+    lib: Any
+    api: Any
+    selfilter_generator: Optional[SelfilterGenerator] = dummy_selfilter_gen
