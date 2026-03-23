@@ -1,10 +1,10 @@
-python-perfact-dbutils (1.5.0+nmu1) UNRELEASED; urgency=medium
+python-perfact-dbutils (1.6.0) unstable; urgency=medium
 
-  * Non-maintainer upload.
+  [ Kai Joshua Martin ]
   * Add generic loader function load_records with advanced options like join, aliasing
     and automatic addition of lookups for id cols if desired
 
- -- Kai Joshua Martin <kmartin@kmartin-notebook.kmartin-notebook>  Fri, 20 Mar 2026 09:49:26 +0100
+ -- Viktor Dick <viktor.dick@perfact.de>  Mon, 23 Mar 2026 11:17:18 +0100
 
 python-perfact-dbutils (1.5.0) unstable; urgency=medium
 
