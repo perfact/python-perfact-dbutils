@@ -185,4 +185,4 @@ class Context:
     lcc: LCC
     lib: Any
     api: Any
-    selfilter_generator: Optional[SelfilterGenerator] = dummy_selfilter_gen
+    selfilter_generator: SelfilterGenerator = dummy_selfilter_gen
