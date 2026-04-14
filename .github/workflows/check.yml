@@ -16,6 +16,18 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-tags: true
-    - uses: jtdor/build-deb-action@v1
+
+    - name: Build package
+      uses: jtdor/build-deb-action@v1
       with:
         docker-image: ${{ matrix.target }}
+        buildpackage-opts: '-uc -us -b'
+
+    - name: Upload built packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: debian-packages
+        path: |
+          ../*.deb
+          ../*.changes
+          ../*.buildinfo
