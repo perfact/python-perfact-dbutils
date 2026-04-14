@@ -6,7 +6,9 @@
 
 override_dh_auto_test:
 ifeq ($(CI),true)
-	runuser -u nobody -- tox
+	adduser --disabled-password --gecos "" ciuser
+	chown -R ciuser:ciuser $(CURDIR)
+	runuser -u ciuser -- tox
 else
 	tox
 endif
