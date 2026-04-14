@@ -27,5 +27,5 @@ jobs:
     - name: Upload built packages
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.target//:/_ }}
+        name: ${{ matrix.target }}
         path: ${{ steps.build.outputs.artifacts }}
