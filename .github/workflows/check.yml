@@ -12,7 +12,7 @@ jobs:
         target: ['jammy', 'bookworm', 'trixie']
     runs-on: ubuntu-latest
     container:
-      image: dockerhub.io/perfactde/perfact-build-${{ matrix.target }}
+      image: docker.io/perfactde/perfact-build-${{ matrix.target }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
