@@ -33,5 +33,5 @@ jobs:
     - name: Upload built packages
       uses: actions/upload-artifact@v4
       with:
-        name: deb-${{ matrix.dist }}
+        name: python-perfact-dbutils.${{ matrix.dist }}
         path: ${{ steps.build.outputs.artifacts }}
