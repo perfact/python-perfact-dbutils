@@ -19,6 +19,7 @@ jobs:
 
     - name: Build package
       uses: jtdor/build-deb-action@v1
+      id: build
       with:
         docker-image: ${{ matrix.target }}
         buildpackage-opts: '-uc -us -b'
@@ -27,7 +28,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: debian-packages
-        path: |
-          ../*.deb
-          ../*.changes
-          ../*.buildinfo
+        path: ${{ steps.build.outputs.artifacts }}
