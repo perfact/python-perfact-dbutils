@@ -9,13 +9,14 @@ jobs:
   build:
     strategy:
       matrix:
-        target: ['ubuntu:jammy', 'debian:bookworm', 'debian:trixie']
+        # target: ['ubuntu:jammy', 'debian:bookworm', 'debian:trixie']
+        target: ['debian:trixie']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        fetch-tags: true
     - uses: jtdor/build-deb-action@v1
       with:
         docker-image: ${{ matrix.target }}
