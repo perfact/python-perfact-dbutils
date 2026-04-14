@@ -20,4 +20,3 @@ jobs:
     - uses: jtdor/build-deb-action@v1
       with:
         docker-image: ${{ matrix.target }}
-        buildpackage-opts: '-r"sudo -u nobody"'
