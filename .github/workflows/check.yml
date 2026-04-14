@@ -24,7 +24,7 @@ jobs:
         echo Debian Fullname: $DEBFULLNAME
         export DEBEMAIL=${{ github.actor }}@perfact.de
         echo Debian Email: $DEBEMAIL
-        debchange --nmu Automated build on commit: ${{ gitea.sha }}
+        debchange --nmu Automated build on commit: ${{ github.sha }}
 
     - name: Update package sources
       run: sudo apt update || true
@@ -37,17 +37,17 @@ jobs:
 
     - name: Collect result files
       run: |
-        rm -rf /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
-        mkdir -p /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}
-        cp /workspace/DebianPackages/*.buildinfo /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.changes /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.deb /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.dsc /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.tar.xz /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        rm -rf /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
+        mkdir -p /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}
+        cp /workspace/DebianPackages/*.buildinfo /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.changes /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.deb /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.dsc /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
+        cp /workspace/DebianPackages/*.tar.xz /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
 
     - name: Output the result as artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.target }}
-        path: /workspace/outputs/${{ gitea.repository }}/${{ gitea.ref_name }}/${{ matrix.target }}/
+        path: /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
         overwrite: true
