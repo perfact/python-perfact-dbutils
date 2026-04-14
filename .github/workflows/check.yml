@@ -9,8 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        # target: ['ubuntu:jammy', 'debian:bookworm', 'debian:trixie']
-        target: ['debian:trixie']
+        target: ['ubuntu:jammy', 'debian:bookworm', 'debian:trixie']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
