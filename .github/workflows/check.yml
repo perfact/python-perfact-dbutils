@@ -9,47 +9,11 @@ jobs:
   build:
     strategy:
       matrix:
-        target: ['jammy', 'bookworm', 'trixie']
+        target: ['ubuntu:jammy', 'debian:bookworm', 'debian:trixie']
     runs-on: ubuntu-latest
-    container:
-      image: docker.io/perfactde/build-${{ matrix.target }}
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
-    - name: Change owner of build output Folder
-      run: sudo chown build:build /workspace/DebianPackages/ && echo OK!
-
-    - name: Update NMU changelog
-      run: |
-        echo Setting environment Variables
-        export DEBFULLNAME=${{ github.actor }}
-        echo Debian Fullname: $DEBFULLNAME
-        export DEBEMAIL=${{ github.actor }}@perfact.de
-        echo Debian Email: $DEBEMAIL
-        debchange --nmu Automated build on commit: ${{ github.sha }}
-
-    - name: Update package sources
-      run: sudo apt update || true
-
-    - name: Install build dependencies
-      run: sudo apt build-dep -y .
-
-    - name: Build
-      run: dpkg-buildpackage
-
-    - name: Collect result files
-      run: |
-        rm -rf /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-        mkdir -p /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}
-        cp /workspace/DebianPackages/*.buildinfo /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.changes /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.deb /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.dsc /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-        cp /workspace/DebianPackages/*.tar.xz /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-
-    - name: Output the result as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/checkout@v4
+    - uses: jtdor/build-deb-action@v1
       with:
-        name: ${{ matrix.target }}
-        path: /workspace/outputs/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.target }}/
-        overwrite: true
+        docker-image: ${{ matrix.target }}
