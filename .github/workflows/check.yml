@@ -19,4 +19,4 @@ jobs:
         fetch-tags: true
     - uses: jtdor/build-deb-action@v1
       with:
-        docker-image: ${{ matrix.target }}
+        docker-image: docker.io/perfact/build-${{ matrix.target }}
