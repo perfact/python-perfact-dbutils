@@ -27,5 +27,5 @@ jobs:
     - name: Upload built packages
       uses: actions/upload-artifact@v4
       with:
-        name: debian-packages
+        name: ${{ matrix.target//:/_ }}
         path: ${{ steps.build.outputs.artifacts }}
