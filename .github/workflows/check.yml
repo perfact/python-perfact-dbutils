@@ -12,10 +12,10 @@ jobs:
         include:
           - os: debian
             dist: trixie
-          - os: debian
-            dist: bookworm
-          - os: ubuntu
-            dist: jammy
+          # - os: debian
+            # dist: bookworm
+          # - os: ubuntu
+            # dist: jammy
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository

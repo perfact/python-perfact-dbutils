@@ -6,13 +6,13 @@ Rules-Requires-Root: no
 Build-Depends:
  debhelper-compat (= 13),
  python3,
- pybuild-plugin-pyproject,
- git,
- tox,
- postgresql-all,
  python3-dev,
  python3-setuptools,
  python3-setuptools-scm,
+ pybuild-plugin-pyproject,
+ git,
+ tox,
+ libpq-dev,
 Standards-Version: 4.6.2
 
 Package: python3-perfact-dbutils
