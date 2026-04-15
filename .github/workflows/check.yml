@@ -1,0 +1,38 @@
+name: Build Package
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request: {}
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: debian
+            dist: trixie
+          - os: debian
+            dist: bookworm
+          - os: ubuntu
+            dist: jammy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-tags: true
+
+    - name: Build package
+      uses: jtdor/build-deb-action@v1
+      id: build
+      with:
+        before-build-hook: debchange --controlmaint --local="+ci${{ github.run_id }}~git$(git rev-parse --short HEAD)" "CI build"
+        docker-image: ${{ matrix.os }}:${{ matrix.dist }}
+        buildpackage-opts: '-uc -us -b'
+
+    - name: Upload built packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-perfact-dbutils.${{ matrix.dist }}
+        path: ${{ steps.build.outputs.artifacts }}
